@@ -61,4 +61,3 @@ jobs:
         ECR_IMAGE_TAG: latest
       run: |
         docker run -d -p 80:80 $ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$ECR_IMAGE_TAG
-
