@@ -48,7 +48,7 @@ jobs:
       env:
         AWS_REGION: us-east-1
         ECR_REGISTRY_ID: 975049883799
-        ECR_REPOSITORY_NAME:nodejs-app
+        ECR_REPOSITORY_NAME: nodejs-app
         ECR_IMAGE_TAG: latest
       run: |
         docker pull $ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$ECR_IMAGE_TAG
