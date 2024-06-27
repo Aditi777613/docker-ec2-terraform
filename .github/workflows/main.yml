@@ -29,7 +29,7 @@ jobs:
       run: terraform init
 
     - name: Plan Terraform
-      run: terraform plan -var docker_ssh_key=my-ssh-key -var ecr_repository_url=***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app -var docker_image_tag=latest -out=tfplan
+      run: terraform plan -out=tfplan
 
     - name: Apply Terraform
       run: terraform apply -auto-approve tfplan
