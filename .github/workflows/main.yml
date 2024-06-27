@@ -10,54 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'us-east-1'
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'us-east-1'
 
-      - name: Initialize Terraform
-        run: terraform init -working-directory=./terraform
+    - name: Initialize Terraform
+      run: terraform init
 
-      - name: Plan Terraform
-        run: terraform plan -var docker_ssh_key=my-ssh-key -var ecr_repository_url=***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app -var docker_image_tag=latest -out=tfplan -working-directory=./terraform
+    - name: Plan Terraform
+      run: terraform plan -var docker_ssh_key=my-ssh-key -var ecr_repository_url=***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app -var docker_image_tag=latest -out=tfplan
 
-      - name: Apply Terraform
-        run: terraform apply -auto-approve tfplan -working-directory=./terraform
+    - name: Apply Terraform
+      run: terraform apply -auto-approve tfplan
 
-      - name: Install AWS CLI
-        run: sudo apt-get install -y awscli
+    - name: Authenticate Docker to ECR
+      run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ***.dkr.ecr.us-east-1.amazonaws.com
 
-      - name: Authenticate Docker to ECR
-        env:
-          AWS_REGION: us-east-1
-          ECR_REGISTRY_ID: 975049883799
-        run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
-      - name: Pull Docker image from ECR
-        env:
-          AWS_REGION: us-east-1
-          ECR_REGISTRY_ID: 975049883799
-          ECR_REPOSITORY_NAME: nodejs-app
-          ECR_IMAGE_TAG: latest
-        run: |
-          docker pull $ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$ECR_IMAGE_TAG
-
-      - name: Run Docker container
-        env:
-          AWS_REGION: us-east-1
-          ECR_REGISTRY_ID: 975049883799
-          ECR_REPOSITORY_NAME: nodejs-app
-          ECR_IMAGE_TAG: latest
-        run: |
-          docker run -d -p 80:80 $ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$ECR_IMAGE_TAG
+    - name: Build and push Docker image
+      run: |
+        docker build -t ***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app:latest .
+        docker push ***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app:latest
