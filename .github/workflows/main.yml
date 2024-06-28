@@ -26,9 +26,10 @@ jobs:
         aws-region: 'us-east-1'
 
     - name: Navigate to Terraform directory
-      run: |
-        cd terraform
-        working-directory: ./terraform
+        run: |
+          pwd
+          ls -la
+        working-directory: $docker-ec2-terraform/terraform
 
     - name: Initialize Terraform
       run: terraform init
