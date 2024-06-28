@@ -6,12 +6,20 @@ resource "aws_security_group" "docker_host_sg" {
   name        = "docker_host_sg"
   description = "Allow inbound traffic on port 80"
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  # Check if the security group already exists
+  lifecycle {
+    create_before_destroy = true
   }
+}
+
+# Create the security group ingress rule
+resource "aws_security_group_rule" "docker_host_sg_ingress" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.docker_host_sg.id
 }
 
 resource "aws_instance" "docker_host" {
