@@ -29,11 +29,16 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: |
+          terraform init
+          terraform validate  # Validate Terraform configuration
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
+
+      - name: Show Terraform Plan Output
+        run: echo "${{ steps.plan.outputs.stdout }}"
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
