@@ -2,14 +2,9 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_security_group" "docker_host_sg" {
-  name        = "docker_host_sg"
-  description = "Allow inbound traffic on port 80"
-
-  # Check if the security group already exists
-  lifecycle {
-    create_before_destroy = true
-  }
+# Import the existing security group
+data "aws_security_group" "docker_host_sg" {
+  name = "docker_host_sg"
 }
 
 # Create the security group ingress rule
@@ -19,14 +14,14 @@ resource "aws_security_group_rule" "docker_host_sg_ingress" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.docker_host_sg.id
+  security_group_id = data.aws_security_group.docker_host_sg.id
 }
 
 resource "aws_instance" "docker_host" {
   ami           = "ami-04b70fa74e45c3917"
   instance_type = var.instance_type
   key_name      = var.docker_ssh_key
-  vpc_security_group_ids = [aws_security_group.docker_host_sg.id]
+  vpc_security_group_ids = [data.aws_security_group.docker_host_sg.id]
 
   user_data = <<-EOF
     #!/bin/bash
@@ -38,7 +33,7 @@ resource "aws_instance" "docker_host" {
     # Install AWS CLI v2
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
-    sudo ./aws/install
+    sudo./aws/install
 
     # Authenticate Docker to ECR
     $(aws ecr get-login-password --region ${var.aws_region}) | docker login --username AWS --password-stdin ${var.ecr_repository_url}
