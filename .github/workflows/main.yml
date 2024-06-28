@@ -25,6 +25,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: 'us-east-1'
 
+    - name: Navigate to Terraform directory
+      run: |
+        cd terraform
+        working-directory: ./terraform
+
     - name: Initialize Terraform
       run: terraform init
 
