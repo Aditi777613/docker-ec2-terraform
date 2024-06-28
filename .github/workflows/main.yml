@@ -25,12 +25,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: 'us-east-1'
 
-    - name: Cache Terraform
-      uses: actions/cache@v2
-      id: terraform-cache
-      key: terraform-cache
-      path: ~/.terraform.d/plugin-cache
-
     - name: Initialize Terraform
       run: terraform init 
       
