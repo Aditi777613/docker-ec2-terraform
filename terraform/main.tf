@@ -5,7 +5,7 @@ provider "aws" {
 resource "aws_instance" "docker_host" {
   ami           = "ami-04b70fa74e45c3917"  
   instance_type = var.instance_type
-  key_name      = var.docker_ssh_key
+  key_name      = docker
 
   user_data = <<-EOF
     #!/bin/bash
