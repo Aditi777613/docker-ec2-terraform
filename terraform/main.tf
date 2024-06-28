@@ -2,10 +2,23 @@ provider "aws" {
   region = var.aws_region
 }
 
+resource "aws_security_group" "docker_host_sg" {
+  name        = "docker_host_sg"
+  description = "Allow inbound traffic on port 80"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_instance" "docker_host" {
-  ami           = "ami-04b70fa74e45c3917"  
+  ami           = "ami-04b70fa74e45c3917"
   instance_type = var.instance_type
-  key_name      = "docker"
+  key_name      = var.docker_ssh_key
+  vpc_security_group_ids = [aws_security_group.docker_host_sg.id]
 
   user_data = <<-EOF
     #!/bin/bash
