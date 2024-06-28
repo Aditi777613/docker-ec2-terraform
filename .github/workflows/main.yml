@@ -27,12 +27,12 @@ jobs:
 
     - name: Initialize Terraform
       run: terraform init
-      working-directory: ./terraform  # Update this line to point to your Terraform config directory
+      working-directory: .terraform
 
     - name: Plan Terraform
       run: terraform plan -var docker_ssh_key=my-ssh-key -var ecr_repository_url=***.dkr.ecr.us-east-1.amazonaws.com/nodejs-app -var docker_image_tag=latest -out=tfplan
-      working-directory: ./terraform  # Update this line to point to your Terraform config directory
+      working-directory: .terraform
 
     - name: Apply Terraform
       run: terraform apply -auto-approve tfplan
-      working-directory: ./terraform  # Update this line to point to your Terraform config directory
+      working-directory: .terraform
