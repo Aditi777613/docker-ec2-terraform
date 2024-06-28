@@ -25,14 +25,17 @@ jobs:
         run: terraform init
 
       - name: Plan Terraform
-        run: terraform plan -out=tfplan
-        working-directory:./terraform
+        run: |
+          cd terraform
+          terraform plan -out=tfplan
 
       - name: Apply Terraform
-        run: terraform apply -auto-approve tfplan
-        working-directory:./terraform
+        run: |
+          cd terraform
+          terraform apply -auto-approve tfplan
 
       - name: Destroy Terraform
         if: github.ref == 'efs/heads/main'
-        run: terraform destroy -auto-approve
-        working-directory:./terraform
+        run: |
+          cd terraform
+          terraform destroy -auto-approve
